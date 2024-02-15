@@ -37,12 +37,20 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1 or /users/1.json
   def update
     respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to user_url(@user), notice: "User was successfully updated." }
-        format.json { render :show, status: :ok, location: @user }
+      if !@user.enrolled_programs_as_teacher.empty?
+        format.html { render plain: "Kind can not be student because is teaching in at least one program", status: :unprocessable_entity }
+        format.json { render json: { error: "Kind can not be student because is teaching in at least one program" }, status: :unprocessable_entity }
+      elsif !@user.enrolled_programs_as_student.empty?
+        format.html { render plain: "Kind can not be teacher because is studying in at least one program", status: :unprocessable_entity }
+        format.json { render json: { error: "Kind can not be teacher because is studying in at least one program" }, status: :unprocessable_entity }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        if @user.update(user_params)
+          format.html { render :edit, status: :ok }
+          format.json { render json: @user.errors, status: :ok }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @user.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
