@@ -16,7 +16,7 @@
 
   <p id='favorite_teachers'>
     <strong>Favorite Teachers:</strong>
-    <%= user.enrollments.includes(:teacher).where(favorite: true).map { |enrollment| enrollment.teacher.name }.join(', ') %>
+    <%= user.enrollments_as_student.includes(:teacher).where(favorite: true).map { |enrollment| enrollment.teacher.name }.join(', ') %>
   </p>
 
   <p id='classmates'>
